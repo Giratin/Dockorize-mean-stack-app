@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+    mongo:
+        image: mongo
+        restart: always
+        volumes:
+            - mongodb-data:/data/db
+        ports:
+            - "27018:27017"
+
+    angular:
+#        build: 
+#            context: ./front
+#            dockerfile: Dockerfile
+        image: tryvl/mean-stack-front:1.0
+        ports:
+            - "8080:80"
+        depends_on:
+            - backend
+            - mongo
+        environment: 
+            - API_BASE_URL=http://localhost:3002/api
+        volumes:
+            - myremotefrontend:/app
+
+    backend:
+#        build:
+#            context: ./api
+#            dockerfile: Dockerfile
+        image: tryvl/mean-stack-back:1.0
+        environment:
+            - NODE_ENV=prodcution
+        ports:
+            - "3002:3002"
+        depends_on: 
+            - mongo
+        restart: always
+        volumes:
+            - myremotebackend:/my-api
+    
+volumes:
+    mongodb-data:
+    myremotebackend:
+    myremotefrontend:
